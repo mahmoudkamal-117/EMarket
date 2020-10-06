@@ -1,0 +1,88 @@
+﻿@model IEnumerable<Emarket.Models.Cart>
+
+    <div class="container shshs">
+    @foreach (var item in Model)
+    {
+        TimeSpan span = DateTime.Now - item.added_at;
+        var x = "";
+        if (span.Days == 0 && span.Hours == 0 && span.Minutes == 0)
+        {
+            x = String.Format("{0} seconds", span.Seconds);
+        }
+        else if (span.Days == 0 && span.Hours == 0)
+        {
+            x = String.Format("{0} minutes", span.Minutes);
+        }
+
+        else if (span.Days == 0)
+        {
+            x = String.Format("{0} hours", span.Hours);
+        }
+        else
+        {
+            x = String.Format("{0} days", span.Days);
+        }
+        <div class=" cartdiv">
+            <a class="btn btn-danger cart" data-cart-id="@item.product_id">Remove</a>
+            <div class="opencart">
+                <h3 class="timeago"> @item.product.name -@item.product.price <span>$</span> </h3>
+
+                <h4>Added to cart @x ago</h4>
+               
+            </div>
+
+
+        </div>
+      
+    }
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".cart").click(function (e) {
+
+            var Link = $(e.target);
+            bootbox.dialog({
+                title: "Confirm",
+                message: "Are you sure you want to Delete this  ?",
+
+                buttons: {
+                    No: {
+                        label: "No",
+                        className: 'btn-default',
+                        callback: function () {
+                            bootbox.hideAll();
+                        }
+                    },
+                    yes: {
+                        label: "Yes",
+                        className: 'btn-danger',
+                        callback: function () {
+                            $.ajax({
+                                url: "/api/cart/" + Link.attr("data-cart-id"),
+                                method: "DELETE"
+                            })
+                              .done(function () {
+
+                                  Link.parents(".cartdiv").fadeOut(function () {
+                                      $(this).remove();
+                                  });
+                              })
+                              .fail(function () {
+                                  alert("somthing fail");
+                              });
+                        }
+                    }
+
+
+                }
+            });
+
+
+
+
+        });
+    });
+
+
+</script>
